@@ -2,45 +2,50 @@
 #include <vector>
 
 using namespace std;
-
-void print_vec (const vector <int> &vec, const int &count)
+//Функция вывода вектора с заданного индекса кругового буфера
+void print_vec (const vector <int> &vec, const int &begin, const int &end)
 {
-    for (int i=0; i<count; i++)
-        cout << vec[i] << " ";
+    for (int i=0; i<end; i++)
+    {
+        int index = begin + i;
+        if (index >= vec.size()) index-=vec.size();
+        cout << vec[index] << " ";
+    }
     cout << endl;
 }
 
 int main() {
+    //Инициализация размера буфера
     int bufferSize = 10;
-    int number = 0;
+    //Инициализация вектора с данными
     vector <int> dataBase (bufferSize);
-    //Инициализация переменной индекса в кольцевом буфере
+    //Инициализация счетчика записи в буфер
     int countRead = 0;
-
+    //Инициализация переменной начального индекса в кольцевом буфере
+    int beginIndex = 0;
     //Организуем цикл записи в вектор пока не будет введено "-2" (условие завершения программы)
+    int number = 0;
     while (number != -2)
     {
+        //Инициализация флага заполнения буфера
         bool bufferFull= countRead > bufferSize ? true : false;
         //Запрос очередного числа
         cout << "Please, enter number: ";
         cin >> number;
 
-        //Выввод содержимого вектора с данными
+        //Выввод содержимого вектора (буфера) с данными
         if (number == -1)
         {
-            if (bufferFull) print_vec(dataBase, bufferSize);
-            else print_vec(dataBase, countRead);
+            if (bufferFull) print_vec(dataBase, beginIndex, bufferSize);
+            else print_vec(dataBase, 0,countRead);
         }
         //Запись введенного числа в кольцевой буфер
         else
         {
-            if (bufferFull)
-            {
-                for (int i=0; i<bufferSize-1; i++) dataBase[i] = dataBase[i+1];
-                dataBase[bufferSize-1]=number;
-            }
-            else dataBase[countRead]=number;
+            if (beginIndex == bufferSize) beginIndex=0;
+            dataBase[beginIndex]=number;
             countRead++;
+            beginIndex++;
         }
     }
     return 0;
